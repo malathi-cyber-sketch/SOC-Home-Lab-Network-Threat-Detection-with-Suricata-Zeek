@@ -425,7 +425,7 @@ soc-home-lab/
 
 6 months of hands-on cybersecurity internship experience covering network/packet analysis, IDS/firewall operations, VAPT, web application security, and SOC operations. This lab was built to demonstrate practical blue team detection skills — from tool installation and configuration through live attack simulation and alert analysis.
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin)](https://linkedin.com/in/malathi-mittapalli-enola-b73208413)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin)](https://www.linkedin.com/in/malathi-mittapalli-enola-b73208413)
 [![GitHub](https://img.shields.io/badge/GitHub-Follow-181717?logo=github)](https://github.com/malathi-cyber-sketch)
 
 ---
