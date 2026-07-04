@@ -1,4 +1,3 @@
-
 # 🛡️ SOC Home Lab — Network Threat Detection with Suricata + Zeek
 
 > A hands-on Security Operations Center (SOC) detection lab where I played both attacker and defender — simulating real reconnaissance activity from Kali Linux against a Windows 10 target, and monitoring, detecting, and analyzing that activity in real time using Suricata (IDS) and Zeek (NSM) on an Ubuntu sensor.
@@ -32,29 +31,29 @@ So I built a three-machine lab from scratch, attacked my own target, and used tw
 
 ```
 ┌──────────────────────────────────────────────────────┐
-│             VirtualBox Host-Only Network              │
-│                  192.168.56.0/24                      │
-│                                                       │
-│  ┌──────────────┐      ┌──────────────┐               │
-│  │  Kali Linux  │      │  Windows 10  │               │
-│  │  (Attacker)  │─────▶│   (Target)   │              │
-│  │192.168.56.103│      │192.168.56.102│               │
-│  └──────┬───────┘      └──────┬───────┘               │
-│         │                     │                       │
-│         └──────────┬──────────┘                       │
-│                     ▼                                 │
-│         ┌──────────────────────┐                      │
-│         │   Ubuntu — Dora      │                      │
-│         │   DEFENDER / NSM     │                      │
-│         │  192.168.56.104      │                      │
-│         │                      │                      │
-│         │  • Suricata 7.0.3    │                      │
-│         │  • Zeek 8.0.8        │                      │
-│         │  • tcpdump           │                      │
-│         │  • interface enp0s8  │                      │
-│         └──────────────────────┘                      │
-│                                                       │
-│   DHCP Server: 192.168.56.100                         │
+│             VirtualBox Host-Only Network             │
+│                  192.168.56.0/24                     │
+│                                                      │
+│  ┌──────────────┐      ┌──────────────┐              │
+│  │  Kali Linux  │      │  Windows 10  │              │
+│  │  (Attacker)  │─────▶│   (Target)   │             │
+│  │192.168.56.103│      │192.168.56.102│              │
+│  └──────┬───────┘      └──────┬───────┘              │
+│         │                     │                      │
+│         └──────────┬──────────┘                      │
+│                     ▼                                │
+│         ┌──────────────────────┐                     │
+│         │   Ubuntu — Dora      │                     │
+│         │   DEFENDER / NSM     │                     │
+│         │  192.168.56.104      │                     │
+│         │                      │                     │
+│         │  • Suricata 7.0.3    │                     │
+│         │  • Zeek 8.0.8        │                     │
+│         │  • tcpdump           │                     │
+│         │  • interface enp0s8  │                     │
+│         └──────────────────────┘                     │
+│                                                      │
+│   DHCP Server: 192.168.56.100                        │
 └──────────────────────────────────────────────────────┘
 ```
 
@@ -86,7 +85,9 @@ Assign each VM's 2nd adapter to this network
 - Kali: `eth0` (NAT) + `eth1` (host-only, DHCP-assigned)
 - Windows 10: Ethernet 2 on host-only → `192.168.56.102`, exposing ports **135 (MSRPC)**, **139 (NetBIOS)**, **445 (SMB)**
 
-*(See `screenshots/server_ip.png`, `kali_ip.png`, `windows_10_ip.png`)*
+| Ubuntu (Dora) IP config | Kali IP config | Windows 10 IP config |
+|---|---|---|
+| ![Ubuntu server IP](screenshots/server_ip.png) | ![Kali IP](screenshots/kali_ip.png) | ![Windows 10 IP](screenshots/windows_10_ip.png) |
 
 ---
 
@@ -103,7 +104,9 @@ Assign each VM's 2nd adapter to this network
 - Kali ↔ all: 0% packet loss, sub-3ms latency
 - Windows ↔ all: full three-way connectivity confirmed
 
-*(See `screenshots/ubuntu_can_talk.png`, `kali_talk.png`, `windows_can_talk.png`)*
+| Ubuntu ping results | Kali ping results | Windows ping results |
+|---|---|---|
+| ![Ubuntu can talk](screenshots/ubuntu_can_talk.png) | ![Kali talk](screenshots/kali_talk.png) | ![Windows can talk](screenshots/windows_can_talk.png) |
 
 ---
 
@@ -125,7 +128,14 @@ sudo systemctl enable --now suricata
 
 **Output:** `HOME_NET` set to cover the lab subnet. **50,896 signatures** loaded successfully. `systemctl status suricata` → **active (running)**, PID 61075, ~280MB memory.
 
-*(See `screenshots/suricata_installed.png`, `suricata_configuration.png`, `suricata_running.png`)*
+**Suricata installed:**
+![Suricata installed](screenshots/suricata_installed.png)
+
+**Suricata configuration (HOME_NET + interface):**
+![Suricata configuration](screenshots/suricata_configuration.png)
+
+**Suricata running:**
+![Suricata running](screenshots/suricata_running.png)
 
 ---
 
@@ -146,7 +156,11 @@ ls /opt/zeek/logs/current/
 
 **Output:** Zeek deployed as a standalone node sniffing `enp0s8`. `zeekctl status` → **running**, generating 12 active log types.
 
-*(See `screenshots/installing_zeek.png`, `conf_zeek.png`)*
+**Installing Zeek:**
+![Installing Zeek](screenshots/installing_zeek.png)
+
+**Zeek node.cfg configuration:**
+![Zeek configuration](screenshots/conf_zeek.png)
 
 ---
 
@@ -169,7 +183,20 @@ nmap -sV      192.168.56.102
 - **`nmap -A`:** Windows 10 Pro build 17763 identified at 97% confidence, hostname `CLIENT`, WORKGROUP domain, 2h19m clock skew, open ports 135/139/445
 - **`nmap -sV`:** Banner-grabbed `Microsoft Windows 7–10 microsoft-ds` on 445/tcp
 
-*(See `screenshots/generating_traffic.png`, `kali_ping_flood.png`, `nmap_scan_on_target.png`, `nmap_sV_results.png`, `zeek_on_kali.png`)*
+**Generating traffic from Kali:**
+![Generating traffic](screenshots/generating_traffic.png)
+
+**Ping sweep results:**
+![Kali ping flood](screenshots/kali_ping_flood.png)
+
+**Nmap scan on target:**
+![Nmap scan on target](screenshots/nmap_scan_on_target.png)
+
+**Nmap -sV service detection results:**
+![Nmap sV results](screenshots/nmap_sV_results.png)
+
+**Zeek view from Kali side:**
+![Zeek on Kali](screenshots/zeek_on_kali.png)
 
 ---
 
@@ -193,7 +220,11 @@ nmap -sV      192.168.56.102
 
 **7 distinct signatures fired** — from an attacker leaking its own identity in a DHCP broadcast before the first scan even started.
 
-*(See `screenshots/suricata_results.png`, `ubuntu_capturing.png`)*
+**Suricata fast.log alert output:**
+![Suricata results](screenshots/suricata_results.png)
+
+**Ubuntu sensor capturing traffic:**
+![Ubuntu capturing](screenshots/ubuntu_capturing.png)
 
 ---
 
@@ -208,7 +239,17 @@ nmap -sV      192.168.56.102
 - The nmap SYN scan produced its textbook Zeek fingerprint: hundreds of `S0`-state connections (SYN sent, no response) from `192.168.56.103` to sequential ports on `192.168.56.102`, each lasting near-zero milliseconds — a pure behavioral detection, no signature required.
 - `tcpdump -i enp0s8 host 192.168.56.103` confirmed all three tools (Suricata, Zeek, tcpdump) were watching the same wire simultaneously, capturing the same ARP resolution and SYN packets.
 
-*(See `screenshots/zeek_results.png`, `zeek_results_on_ping.png`, `zeek_nmap.png`, `tcpdump_results.png`)*
+**Zeek conn.log results:**
+![Zeek results](screenshots/zeek_results.png)
+
+**Zeek results on ping sweep:**
+![Zeek results on ping](screenshots/zeek_results_on_ping.png)
+
+**Zeek results on nmap SYN scan (S0 pattern):**
+![Zeek nmap](screenshots/zeek_nmap.png)
+
+**tcpdump cross-verification:**
+![tcpdump results](screenshots/tcpdump_results.png)
 
 ---
 
@@ -333,4 +374,3 @@ soc-home-lab/
 ---
 
 *MIT License — free to use, fork, and build on.*
-
